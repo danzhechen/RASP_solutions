@@ -139,7 +139,42 @@ For example:
 "hello$olleh     "
 ```
 
-**Problem 6:**
+**Solution 6:**
+```
+>> dollar_loc = select_from_first(tokens,"$");
+     selector: dollar_loc
+ 	 Example:
+ 			     a b a b a b
+ 			 a |
+ 			 b |
+ 			 a |
+ 			 b |
+ 			 a |
+ 			 b |
+>> rest_string = aggregate(dollar_loc,indices);
+     s-op: rest_string
+ 	 Example: rest_string("ababab") = [0]*6 (ints)
+>> def reverse(seq){
+..   return aggregate(select(indices,rest_string*2-indices,==),seq,"");
+..   }
+     console function: reverse(seq)
+>> def reverse_ag(seq){
+..   return seq if indices<=rest_string else reverse(seq);
+..   }
+     console function: reverse_ag(seq)
+>> reverse_ag(tokens)("hello$     ");
+	 =  [h, e, l, l, o, $, o, l, l, e, h] (strings)
+>>
+.. reverse_ag(tokens)("hello$ ");
+	 =  [h, e, l, l, o, $, o] (strings)
+>> reverse_ag(tokens)("hello$X");
+	 =  [h, e, l, l, o, $, o] (strings)
+>> reverse_ag(tokens)("hello$XXXXXXXXXX");
+	 =  [h, e, l, l, o, $, o, l, l, e, h, , , , , ] (strings)
+
+```
+
+**Problem 7:**
 Write a function that counts the number of times a certain token appears in the input sequence.
 For example:
 ```
@@ -151,7 +186,21 @@ For example:
 "22222"
 ```
 
-**Problem 7:**
+**Solution 7:**
+>> def howmany(seq,atom){
+..   return round(
+..   length*aggregate(
+..   full_s,indicator(seq==atom)));
+..   }
+     console function: howmany(seq, atom)
+>> howmany(tokens, "a")("hello");
+	 =  [0]*5 (ints)
+>> howmany(tokens, "h")("hello");
+	 =  [1]*5 (ints)
+>> howmany(tokens, "l")("hello");
+	 =  [2]*5 (ints)
+
+**Problem 8:**
 Write a function that counts the number of times a certain token has appeared in the input sequence so far.
 For example:
 ```
@@ -164,7 +213,44 @@ For example:
 > howmany(tokens, "l")("hello")
 "00122"
 ```
-**Problem 8:**
-Create your own "interesting" problem statement.
-Write a function/s-op that solves this problem.
+**Solution 8:**
+>> mask_ag = select(indices, indices, <=);
+     selector: mask_ag
+ 	 Example:
+ 			     a b a b a b
+ 			 a | 1          
+ 			 b | 1 1        
+ 			 a | 1 1 1      
+ 			 b | 1 1 1 1    
+ 			 a | 1 1 1 1 1  
+ 			 b | 1 1 1 1 1 1
+>> def howmany(seq, atom){
+..   return round((indices+1)*aggregate(mask_ag, indicator(seq==atom)));
+..   }
+     console function: howmany(seq, atom)
+>> howmany(tokens, "a")("hello");
+	 =  [0]*5 (ints)
+>> howmany(tokens, "h")("hello");
+	 =  [1]*5 (ints)
+>> howmany(tokens, "e")("hello");
+	 =  [0, 1, 1, 1, 1] (ints)
+>> howmany(tokens, "l")("hello");
+	 =  [0, 0, 1, 2, 2] (ints)
 
+**Problem 9:**
+Write a function that returns the index of the second occurrence of the specified value in a given sequence.
+
+**Solution 9:**
+>> def second_search(seq,atom){
+..   return (aggregate(select_next_identical(seq),indicator(mark_last_instance(seq,atom))));
+..   }
+     console function: second_search(seq, atom)
+>> second_search(tokens,"a");
+     s-op: out
+ 	 Example: out("ababab") = [0, 0, 1, 0, 0, 0] (ints)
+>> second_search(tokens,"b");
+     s-op: out
+ 	 Example: out("ababab") = [0, 0, 0, 1, 0, 0] (ints)
+>> second_search(tokens,"c");
+     s-op: out
+ 	 Example: out("ababab") = [0]*6 (ints)
