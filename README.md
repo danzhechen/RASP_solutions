@@ -187,6 +187,7 @@ For example:
 ```
 
 **Solution 7:**
+```
 >> def howmany(seq,atom){
 ..   return round(
 ..   length*aggregate(
@@ -199,6 +200,7 @@ For example:
 	 =  [1]*5 (ints)
 >> howmany(tokens, "l")("hello");
 	 =  [2]*5 (ints)
+```
 
 **Problem 8:**
 Write a function that counts the number of times a certain token has appeared in the input sequence so far.
@@ -214,6 +216,7 @@ For example:
 "00122"
 ```
 **Solution 8:**
+```
 >> mask_ag = select(indices, indices, <=);
      selector: mask_ag
  	 Example:
@@ -236,11 +239,13 @@ For example:
 	 =  [0, 1, 1, 1, 1] (ints)
 >> howmany(tokens, "l")("hello");
 	 =  [0, 0, 1, 2, 2] (ints)
+```
 
 **Problem 9:**
 Write a function that returns the index of the second occurrence of the specified value in a given sequence.
 
 **Solution 9:**
+```
 >> def second_search(seq,atom){
 ..   return (aggregate(select_next_identical(seq),indicator(mark_last_instance(seq,atom))));
 ..   }
@@ -254,3 +259,4 @@ Write a function that returns the index of the second occurrence of the specifie
 >> second_search(tokens,"c");
      s-op: out
  	 Example: out("ababab") = [0]*6 (ints)
+```
